@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "NodeNext",
+    "target": "ESNext",
+    "module": "NodeNext",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "outDir": "./build",
+    "rootDir": "./",
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["node", "jest"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx"
+  }
+}

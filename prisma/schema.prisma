@@ -1,0 +1,175 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Owner {
+  id Int @id
+  email String @unique
+  password String
+  userType UserType
+  firstName String
+  middleName String?
+  lastName String
+  isVerified Boolean? @default(false)
+  phone1 String @unique
+  phone2 String? @unique
+  address Address?
+  aadharId String
+  panId String
+  aadhar String
+  pan String
+  drivingLicenseId String?
+  drivingLicense String?
+  voterId String?
+  voter String?
+  profileImage String?
+  description String?
+  preferredContactMethod PreferredContactMethod?
+  preferredLanguage String?
+  emergencyDetails EmergencyDetails?
+  properties Property[]
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model Property {
+  id Int @id
+  ownerId Int
+  renters Renter[]
+  owner Owner @relation(fields: [ownerId], references: [id])
+  isVerified Boolean? @default(false)
+  status PropertyStatus @default(pendingApproval)
+  nextAvailableDate DateTime?
+  name String?
+  address Address?
+  type PropertyType
+  roomDetails RoomDetails?
+  rent Int?
+  description String
+  preferred Preference
+  photos String[]
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model RoomDetails {
+  id String @id @default(cuid())
+  propertyId Int @unique
+  property Property @relation(fields: [propertyId], references: [id])
+  quantity Int
+  rentType RentType
+  rent Int?
+  perPersonRent Int?
+}
+
+model Renter {
+  id Int @id
+  renterPropertyId Int?
+  renterProperty Property? @relation(fields: [renterPropertyId], references: [id])
+  password String
+  firstName String
+  middleName String?
+  lastName String
+  address Address?
+  email String
+  phone1 String @unique
+  phone2 String? @unique
+  DOB DateTime
+  userType UserType
+  aadharId String
+  panId String
+  aadhar String
+  pan String
+  drivingLicenseId String?
+  drivingLicense String?
+  voterId String?
+  voter String?
+  profileImage String
+  desription String?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  guardianDetails EmergencyDetails[]
+}
+
+enum Preference {
+  family
+  bachelors
+  any
+}
+
+enum RentType {
+  total
+  perPerson
+}
+
+enum PropertyType {
+  apartment
+  house
+  rooms
+}
+
+model Address {
+  id String @id @default(cuid())
+  ownerId Int? @unique
+  owner Owner? @relation(fields: [ownerId], references: [id])
+  propertyId Int? @unique
+  property Property? @relation(fields: [propertyId], references: [id])
+  renterId Int? @unique
+  renter Renter? @relation(fields: [renterId], references: [id])
+  addressLine String
+  city String
+  state String
+  pincode Int
+  electricityBill String?
+  propertyTaxBill String?
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model EmergencyDetails {
+  id String @id @default(cuid())
+  ownerId Int? @unique
+  owner Owner? @relation(fields: [ownerId], references: [id])
+  renterId Int? @unique
+  renter Renter? @relation(fields: [renterId], references: [id])
+  phone1 String @unique
+  phone2 String?
+  email String @unique
+  firstName String
+  middleName String?
+  lastName String
+  relation String
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+enum PropertyStatus {
+  available
+  rentedOut
+  underMaintenance
+  notRentingAnymore
+  pendingApproval
+}
+
+enum PreferredContactMethod {
+  email
+  phone
+  any
+}
+
+enum UserType {
+  superuser
+  owner
+  renter
+}
