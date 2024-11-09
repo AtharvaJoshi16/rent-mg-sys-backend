@@ -22,6 +22,7 @@ model Owner {
   middleName String?
   lastName String
   isVerified Boolean? @default(false)
+  isEmailVerified Boolean? @default(false)
   phone1 String @unique
   phone2 String? @unique
   address Address?
@@ -83,6 +84,7 @@ model Renter {
   lastName String
   address Address?
   email String
+  isEmailVerified Boolean? @default(false)
   phone1 String @unique
   phone2 String? @unique
   DOB DateTime

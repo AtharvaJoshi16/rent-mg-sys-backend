@@ -1,12 +1,28 @@
 import type { Context, Next } from "hono";
 import type { StatusCode } from "hono/utils/http-status";
 import { ZodError } from "zod";
-import { responses } from "../constants/responseMessages.js";
+import { ownerQueryParams } from "../constants/queryParams/owner.js";
+import {
+  missingParamMessage,
+  responses,
+} from "../constants/responseMessages.js";
 import { ownerSchema } from "../schemas/ownerSchema.js";
 import { formatZodError } from "../utils/formatZodError.js";
 
 export const validateOwnerData = async (c: Context, next: Next) => {
   const data = await c.req.json();
+
+  const emailVerificationLink = c.req.query(ownerQueryParams.verificationLink);
+
+  if (!emailVerificationLink) {
+    return c.json(
+      {
+        error: missingParamMessage([ownerQueryParams.verificationLink]),
+      },
+      400
+    );
+  }
+
   try {
     ownerSchema.parse(data);
     await next();

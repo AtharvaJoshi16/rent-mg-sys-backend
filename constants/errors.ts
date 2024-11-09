@@ -6,4 +6,6 @@ export const errors = {
   INTERNAL_SERVER_ERROR: "Internal Server Error",
   DATA_VALIDATION_ERROR: "Data validation error",
   INITIALIZATION_ERROR: "Initialization error",
+  INVALID_TOKEN_ERROR: "Invalid or expired token",
+  INVALID_PASSWORD: "Invalid password",
 };
