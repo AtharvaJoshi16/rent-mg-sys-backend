@@ -1,3 +1,4 @@
+import { UserType } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { creationSuccessMessage } from "../../constants/responseMessages.js";
 import { emailData } from "../../constants/verificationEmail.js";
@@ -17,6 +18,11 @@ export const createOwner = async (
   const formattedData = { ...data };
   const { address, emergencyDetails } = formattedData;
   formattedData.id = newId;
+  address!.ownerId = newId;
+  emergencyDetails!.ownerId = newId;
+  formattedData.isEmailVerified = false;
+  formattedData.isVerified = false;
+  formattedData.userType = UserType.owner;
   formattedData.password = bcrypt.hashSync(formattedData.password, 10);
   try {
     await db.owner.create({
@@ -44,7 +50,10 @@ export const createOwner = async (
       },
     });
 
-    const token = generateToken(formattedData.email);
+    const token = generateToken(
+      formattedData.email,
+      process.env.USER_LOGIN_EXP_TIME
+    );
 
     const info = await transporter.sendMail({
       from: process.env.EMAIL,
@@ -55,7 +64,7 @@ export const createOwner = async (
         `${emailVerificationLink}?token=${token}`
       ),
     });
-    console.log(info.response);
+    console.info(info.response);
 
     return {
       status: 201,

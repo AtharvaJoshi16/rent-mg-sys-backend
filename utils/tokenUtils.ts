@@ -25,7 +25,7 @@ export const verifyToken = (token: string): VerifyTokenResponse | void => {
       return { info, verified: true };
     });
   } catch (err) {
-    console.log(err);
+    console.info(err);
     return {
       error: errors.INTERNAL_SERVER_ERROR,
       status: 500,

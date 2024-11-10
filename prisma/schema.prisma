@@ -83,7 +83,7 @@ model Renter {
   middleName String?
   lastName String
   address Address?
-  email String
+  email String @unique
   isEmailVerified Boolean? @default(false)
   phone1 String @unique
   phone2 String? @unique

@@ -6,7 +6,7 @@ import {
   missingParamMessage,
   responses,
 } from "../constants/responseMessages.js";
-import { ownerSchema } from "../schemas/ownerSchema.js";
+import { ownerCreateSchema } from "../schemas/ownerCreateSchema.js";
 import { formatZodError } from "../utils/formatZodError.js";
 
 export const validateOwnerData = async (c: Context, next: Next) => {
@@ -24,7 +24,7 @@ export const validateOwnerData = async (c: Context, next: Next) => {
   }
 
   try {
-    ownerSchema.parse(data);
+    ownerCreateSchema.parse(data);
     await next();
   } catch (e) {
     if (e instanceof ZodError) {

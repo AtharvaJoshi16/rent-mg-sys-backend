@@ -1,4 +1,5 @@
 import { Context } from "hono";
+import { params } from "../../../constants/queryParams/commonParams.js";
 import { userAlreadyVerified } from "../../../constants/responseMessages.js";
 import { UserType } from "../../../interfaces/userType.enum.js";
 import { VerifyTokenResponse } from "../../../interfaces/verifyTokenResponse.js";
@@ -7,8 +8,8 @@ import { verifyToken } from "../../../utils/tokenUtils.js";
 import { verifyEmail } from "../../repository/auth/verifyEmail.repo.js";
 
 export const verifyEmailController = async (c: Context) => {
-  const token = c.req.query("token");
-  const userType = c.req.query("userType");
+  const token = c.req.query(params.token);
+  const userType = c.req.query(params.userType);
   const data = verifyToken(token!) as VerifyTokenResponse;
   if (data.verified) {
     const user: any = await findUser(data.info?.email!, userType as UserType);

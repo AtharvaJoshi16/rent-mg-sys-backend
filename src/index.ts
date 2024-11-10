@@ -18,7 +18,7 @@ app.use("/", cors() as MiddlewareHandler<BlankEnv, "/api/v1", {}>);
 app.route("/owner", ownerRouter);
 app.route("/auth", authRouter);
 
-console.log(`Server is running on http://localhost:${process.env.PORT}`);
+console.info(`Server is running on http://localhost:${process.env.PORT}`);
 
 serve({
   fetch: app.fetch,

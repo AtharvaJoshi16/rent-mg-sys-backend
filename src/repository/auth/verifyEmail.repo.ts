@@ -17,7 +17,7 @@ export const verifyEmail = async (email: string, userType: UserType) => {
     }
 
     if (userType === UserType.RENTER) {
-      await db.owner.update({
+      await db.renter.update({
         where: {
           email,
         },

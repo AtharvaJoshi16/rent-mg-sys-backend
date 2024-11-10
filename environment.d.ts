@@ -8,6 +8,7 @@ declare global {
       JWT_SECRET: string;
       EMAIL: string;
       PASS: string;
+      USER_LOGIN_EXP_TIME: string;
     }
   }
 }

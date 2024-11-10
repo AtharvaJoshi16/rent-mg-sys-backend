@@ -1,7 +1,6 @@
 import z from "zod";
 import { messages } from "../constants/validationMessages.js";
 import { PreferredContactMethod } from "../interfaces/preferredContactMethod.enum.js";
-import { UserType } from "../interfaces/userType.enum.js";
 
 export const ownerId = z.number().refine(
   (val) => {
@@ -13,7 +12,7 @@ export const ownerId = z.number().refine(
   }
 );
 
-export const ownerSchema = z.object({
+export const ownerCreateSchema = z.object({
   email: z.string().email({ message: messages.owner.email }),
   password: z
     .string()
@@ -29,7 +28,6 @@ export const ownerSchema = z.object({
     .refine((val) => /[!@#$%^&*(),.?":{}|<>]/.test(val), {
       message: messages.owner.password.special,
     }),
-  isVerified: z.boolean().optional(),
   firstName: z.string(),
   middleName: z.string().optional(),
   lastName: z.string(),
@@ -45,46 +43,7 @@ export const ownerSchema = z.object({
   voter: z.string().optional(),
   profileImage: z.string().optional(),
   description: z.string().optional(),
-  userType: z.enum([UserType.SUPERUSER, UserType.RENTER, UserType.OWNER], {
-    message: messages.owner.userType,
-  }),
   address: z.object({
-    ownerId: z
-      .number()
-      .refine(
-        (val) => {
-          const length = val.toString().length;
-          return length === 8;
-        },
-        {
-          message: messages.owner.id,
-        }
-      )
-      .optional(),
-    propertyId: z
-      .number()
-      .refine(
-        (val) => {
-          const length = val.toString().length;
-          return length === 8;
-        },
-        {
-          message: messages.property.id,
-        }
-      )
-      .optional(),
-    renterId: z
-      .number()
-      .refine(
-        (val) => {
-          const length = val.toString().length;
-          return length === 8;
-        },
-        {
-          message: messages.renter.id,
-        }
-      )
-      .optional(),
     addressLine: z.string(),
     city: z.string(),
     state: z.string(),
@@ -106,30 +65,6 @@ export const ownerSchema = z.object({
     .optional(),
   preferredLanguage: z.string().optional(),
   emergencyDetails: z.object({
-    ownerId: z
-      .number()
-      .refine(
-        (val) => {
-          const length = val.toString().length;
-          return length === 8;
-        },
-        {
-          message: messages.owner.id,
-        }
-      )
-      .optional(),
-    renterId: z
-      .number()
-      .refine(
-        (val) => {
-          const length = val.toString().length;
-          return length === 8;
-        },
-        {
-          message: messages.renter.id,
-        }
-      )
-      .optional(),
     phone1: z.string(),
     phone2: z.string().optional(),
     email: z.string().email(),
@@ -159,4 +94,4 @@ export const ownerSchema = z.object({
 //     }
 //   );
 
-export type ownerSchemaType = z.infer<typeof ownerSchema>;
+export type ownerSchemaType = z.infer<typeof ownerCreateSchema>;

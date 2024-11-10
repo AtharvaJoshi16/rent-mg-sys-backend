@@ -1,4 +1,5 @@
 import { Context } from "hono";
+import { params } from "../../../constants/queryParams/commonParams.js";
 import {
   emailConfirmation,
   noUserFoundWithEmailAndTypeMessage,
@@ -12,9 +13,9 @@ import { generateToken } from "../../../utils/tokenUtils.js";
 import { transporter } from "../../../utils/transporter.js";
 
 export const sendVerificationEmailController = async (c: Context) => {
-  const email = c.req.query("email")!;
-  const userType = c.req.query("userType")!;
-  const verificationLink = c.req.query("verificationLink")!;
+  const email = c.req.query(params.email)!;
+  const userType = c.req.query(params.userType)!;
+  const verificationLink = c.req.query(params.verificationLink)!;
   const user: any = await findUser(email, userType as UserType);
 
   if (!user) {
@@ -45,7 +46,7 @@ export const sendVerificationEmailController = async (c: Context) => {
           `${verificationLink}?token=${token}`
         ),
       });
-      console.log(info.response);
+      console.info(info.response);
       return c.json(
         {
           message: emailConfirmation(email),
