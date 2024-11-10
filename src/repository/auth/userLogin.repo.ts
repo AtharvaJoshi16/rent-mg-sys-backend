@@ -28,7 +28,7 @@ export const userLogin = async (
   }
 
   if (bcrypt.compareSync(password, dbPassword)) {
-    const token = generateToken(email, "1d");
+    const token = generateToken(email, process.env.USER_LOGIN_EXP_TIME);
     return {
       status: 200,
       token,

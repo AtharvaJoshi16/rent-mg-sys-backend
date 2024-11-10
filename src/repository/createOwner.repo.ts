@@ -50,10 +50,7 @@ export const createOwner = async (
       },
     });
 
-    const token = generateToken(
-      formattedData.email,
-      process.env.USER_LOGIN_EXP_TIME
-    );
+    const token = generateToken(formattedData.email);
 
     const info = await transporter.sendMail({
       from: process.env.EMAIL,
