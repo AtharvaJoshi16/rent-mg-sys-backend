@@ -18,7 +18,7 @@ export const verifyToken = (token: string): VerifyTokenResponse | void => {
         ) {
           return {
             error: errors.INVALID_TOKEN_ERROR,
-            status: 400,
+            status: 401,
           };
         }
       }

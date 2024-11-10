@@ -1,7 +1,7 @@
 import type { Context } from "hono";
 import type { StatusCode } from "hono/utils/http-status";
 import { ownerQueryParams } from "../../../constants/queryParams/owner.js";
-import { createOwner } from "../../repository/createOwner.repo.js";
+import { createOwner } from "../../repository/owner/createOwner.repo.js";
 
 export const createOwnerController = async (c: Context) => {
   const data = await c.req.json();

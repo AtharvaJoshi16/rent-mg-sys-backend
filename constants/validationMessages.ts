@@ -1,9 +1,11 @@
 export const messages = {
   address: {
     id: "Invalid Address ID",
+    ownerId: "Address: Invalid Owner ID",
   },
   emergencyDetails: {
     id: "Invalid emergency details id",
+    ownerId: "Address: Invalid Owner ID",
   },
   owner: {
     id: "Invalid ID (Should have min length of 8)",

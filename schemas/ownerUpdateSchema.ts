@@ -12,22 +12,9 @@ export const ownerId = z.number().refine(
   }
 );
 
-export const ownerCreateSchema = z.object({
+export const ownerUpdateSchema = z.object({
+  id: ownerId,
   email: z.string().email({ message: messages.owner.email }),
-  password: z
-    .string()
-    .min(10, {
-      message: messages.owner.password.length,
-    })
-    .refine((val) => /[A-Z]/.test(val), {
-      message: messages.owner.password.uppercase,
-    })
-    .refine((val) => /[0-9]/.test(val), {
-      message: messages.owner.password.digit,
-    })
-    .refine((val) => /[!@#$%^&*(),.?":{}|<>]/.test(val), {
-      message: messages.owner.password.special,
-    }),
   firstName: z.string(),
   middleName: z.string().optional(),
   lastName: z.string(),
@@ -74,24 +61,5 @@ export const ownerCreateSchema = z.object({
     relation: z.string(),
   }),
 });
-// TODO: Below validation will be added for Update Schema
-//   })
-//   .refine(
-//     (data) =>
-//       data.address.ownerId || data.address.propertyId || data.address.renterId,
-//     {
-//       message:
-//         "Either of the field values must be provided among Owner ID, Property ID and Renter ID in address",
-//       path: ["ownerId", "renterId", "propertyId"],
-//     }
-//   )
-//   .refine(
-//     (data) => data.emergencyDetails.ownerId || data.emergencyDetails.renterId,
-//     {
-//       message:
-//         "Either of the field values must be provided among Owner ID and Renter ID in emergency details",
-//       path: ["ownerId", "renterId"],
-//     }
-//   );
 
-export type CreateOwnerSchema = z.infer<typeof ownerCreateSchema>;
+export type UpdateOwnerSchema = z.infer<typeof ownerUpdateSchema>;

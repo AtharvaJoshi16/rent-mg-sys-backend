@@ -3,6 +3,7 @@ import { UserType as UserTypeEnum } from "../interfaces/userType.enum.js";
 export const responses = {
   UNKNOWN: "Encountered Unknown error",
   EMAIL_VERIFICATION_SUCCESS: "Email verified successfully",
+  USER_UPDATED: "User data updated",
 };
 
 export const creationSuccessMessage = (data: {
@@ -10,6 +11,13 @@ export const creationSuccessMessage = (data: {
   userType: UserType;
 }) => {
   return `User created with type ${data.userType}. Email verification link sent to ${data.email}`;
+};
+
+export const updateSuccessMessage = (data: {
+  email: string;
+  userType: UserType;
+}) => {
+  return `User updated. Verification link sent to ${data.email} updated email`;
 };
 
 export const missingParamMessage = (param: string[]) => {

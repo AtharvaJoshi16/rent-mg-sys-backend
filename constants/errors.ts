@@ -8,4 +8,5 @@ export const errors = {
   INITIALIZATION_ERROR: "Initialization error",
   INVALID_TOKEN_ERROR: "Invalid or expired token",
   INVALID_PASSWORD: "Invalid password",
+  UNAUTHORIZED: "Unauthorized",
 };
