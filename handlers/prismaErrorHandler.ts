@@ -1,8 +1,9 @@
 import { Prisma } from "@prisma/client";
 import { prismaErrorCodes } from "../constants/errorCodes.js";
 import { errors } from "../constants/errors.js";
+import { PrismaErrorHandler } from "../interfaces/prismaErrorHandler.js";
 
-export const prismaErrorHandler = (e: Error) => {
+export const prismaErrorHandler = (e: Error): PrismaErrorHandler => {
   const {
     UNIQUE_CONSTRAINT,
     TRANSACTION_TIMEOUT,

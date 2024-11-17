@@ -4,3 +4,8 @@ export interface CustomCreateResponse {
   error?: string;
   field?: unknown;
 }
+
+export interface CustomGenericResponse {
+  status: number;
+  error: string;
+}
