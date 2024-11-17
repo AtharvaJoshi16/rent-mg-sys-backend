@@ -12,6 +12,11 @@ export const getOwner = async (ownerId: number): Promise<IOwnerGet> => {
       where: {
         id: ownerId,
       },
+      include: {
+        address: true,
+        emergencyDetails: true,
+        properties: true,
+      },
     });
     return {
       status: 200,
