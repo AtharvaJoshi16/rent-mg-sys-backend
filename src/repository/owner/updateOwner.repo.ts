@@ -1,69 +1,137 @@
+import { Prisma } from "@prisma/client";
+import { prismaErrorCodes } from "../../../constants/errorCodes.js";
 import {
+  alreadyInUse,
   responses,
   updateSuccessMessage,
 } from "../../../constants/responseMessages.js";
 import { emailData } from "../../../constants/verificationEmail.js";
 import { prismaErrorHandler } from "../../../handlers/prismaErrorHandler.js";
-import { PrismaOwnerData } from "../../../interfaces/owner.js";
 import { CustomCreateResponse } from "../../../interfaces/responses.js";
 import { UserType } from "../../../interfaces/userType.enum.js";
+import { UpdateOwnerSchema } from "../../../schemas/ownerUpdateSchema.js";
+import { filterPayload } from "../../../utils/filterData.js";
+import {
+  filterAddressPayload,
+  filterEmergencyDetailsPayload,
+} from "../../../utils/filterPayloads.js";
 import { findUser } from "../../../utils/findUser.js";
 import { db } from "../../../utils/prismaClient.js";
 import { generateToken } from "../../../utils/tokenUtils.js";
 import { transporter } from "../../../utils/transporter.js";
 
 export const updateOwner = async (
-  data: PrismaOwnerData,
+  data: UpdateOwnerSchema,
   verificationLink: string
 ): Promise<CustomCreateResponse> => {
-  const formattedData = { ...data };
-  const { address, emergencyDetails } = formattedData;
-  const { email } = formattedData;
-  address!.ownerId = data.id;
-  emergencyDetails!.ownerId = data.id;
+  const payload = { ...data };
+  const filteredPayload = filterPayload(payload);
+  const { address, emergencyDetails, phone1, phone2, email } = filteredPayload;
 
-  const user: any = await findUser(email, UserType.OWNER);
-  const isEmailUpdated = user?.email !== email;
+  const user: any = await findUser(email!, UserType.OWNER);
+  const isEmailUpdated = !!email && user?.email !== email;
 
   try {
-    await db.owner.update({
-      where: {
-        id: data.id,
-      },
-      data: {
-        ...formattedData,
-        isEmailVerified: false,
-        address: {
-          create: {
-            addressLine: address?.addressLine as string,
-            city: address?.city as string,
-            pincode: address?.pincode as number,
-            state: address?.state as string,
-            electricityBill: address?.electricityBill,
-            propertyTaxBill: address?.propertyTaxBill,
+    await db.$transaction(
+      async (tx) => {
+        if (!!email) {
+          const existingOwnerWithEmail = await tx.owner.findUnique({
+            where: {
+              email: email,
+            },
+          });
+
+          if (existingOwnerWithEmail) {
+            throw new Prisma.PrismaClientKnownRequestError(
+              alreadyInUse("Email"),
+              {
+                code: prismaErrorCodes.UNIQUE_CONSTRAINT,
+                clientVersion: "custom",
+                meta: {
+                  modelName: "Owner",
+                  target: "email",
+                },
+              }
+            );
+          }
+        }
+        if (!!phone1) {
+          const existingOwnerWithPhone1 = await tx.owner.findUnique({
+            where: {
+              phone1: phone1,
+            },
+          });
+
+          if (existingOwnerWithPhone1) {
+            throw new Prisma.PrismaClientKnownRequestError(
+              alreadyInUse("Phone1"),
+              {
+                code: prismaErrorCodes.UNIQUE_CONSTRAINT,
+                clientVersion: "custom",
+                meta: {
+                  modelName: "Owner",
+                  target: "phone1",
+                },
+              }
+            );
+          }
+        }
+        if (!!phone2) {
+          const existingOwnerWithPhone2 = await tx.owner.findUnique({
+            where: {
+              phone2: phone2,
+            },
+          });
+
+          if (existingOwnerWithPhone2) {
+            throw new Prisma.PrismaClientKnownRequestError(
+              alreadyInUse("Phone2"),
+              {
+                code: prismaErrorCodes.UNIQUE_CONSTRAINT,
+                clientVersion: "custom",
+                meta: {
+                  modelName: "Owner",
+                  target: "phone2",
+                },
+              }
+            );
+          }
+        }
+
+        await db.owner.update({
+          where: {
+            id: data.id,
           },
-        },
-        emergencyDetails: {
-          create: {
-            phone1: emergencyDetails?.phone1 as string,
-            email: emergencyDetails?.email as string,
-            firstName: emergencyDetails?.firstName as string,
-            lastName: emergencyDetails?.lastName as string,
-            relation: emergencyDetails?.relation as string,
+          data: {
+            ...filteredPayload,
+            ...(isEmailUpdated && {
+              isEmailVerified: false,
+            }),
+            address: {
+              update: {
+                ...filterAddressPayload(address),
+              },
+            },
+            emergencyDetails: {
+              update: {
+                ...filterEmergencyDetailsPayload(emergencyDetails),
+              },
+            },
           },
-        },
+        });
       },
-    });
+      { timeout: 20000 }
+    );
 
     if (isEmailUpdated) {
-      const token = generateToken(email);
+      const token = generateToken(email!);
 
       const info = await transporter.sendMail({
         from: process.env.EMAIL,
         to: email,
         subject: emailData.subject,
         html: emailData.html(
-          `${formattedData.firstName} ${formattedData.lastName}`,
+          `${payload.firstName} ${payload.lastName}`,
           `${verificationLink}?token=${token}`
         ),
       });
@@ -74,13 +142,13 @@ export const updateOwner = async (
       status: 201,
       message: isEmailUpdated
         ? updateSuccessMessage({
-            email: formattedData.email,
-            userType: formattedData.userType,
+            email: payload.email!,
+            userType: UserType.OWNER,
           })
         : responses.USER_UPDATED,
     };
   } catch (e) {
-    console.log(e);
+    console.info(e);
     return prismaErrorHandler(e as Error);
   }
 };

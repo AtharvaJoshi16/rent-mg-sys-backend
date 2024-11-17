@@ -38,3 +38,6 @@ export const userAlreadyVerified = (email: string, userType: UserTypeEnum) => {
 export const emailConfirmation = (email: string) => {
   return `Verification email sent to ${email}`;
 };
+export const alreadyInUse = (field: string) => {
+  return `${field} is already in use`;
+};

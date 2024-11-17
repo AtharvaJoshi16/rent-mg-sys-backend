@@ -1,5 +1,6 @@
-import { Owner, Renter } from "@prisma/client";
 import { prismaErrorHandler } from "../handlers/prismaErrorHandler.js";
+import { PrismaOwnerData } from "../interfaces/owner.js";
+import { PrismaRenterData } from "../interfaces/renter.js";
 import { CustomCreateResponse } from "../interfaces/responses.js";
 import { UserType } from "../interfaces/userType.enum.js";
 import { db } from "./prismaClient.js";
@@ -7,7 +8,9 @@ import { db } from "./prismaClient.js";
 export const findUser = async (
   email: string,
   userType: UserType
-): Promise<Owner | Renter | CustomCreateResponse | null> => {
+): Promise<
+  PrismaOwnerData | PrismaRenterData | CustomCreateResponse | null
+> => {
   try {
     const user =
       userType === UserType.OWNER
@@ -21,7 +24,16 @@ export const findUser = async (
               email: email,
             },
           });
-
+    const address = await db.address.findFirst({
+      where: {
+        ...(userType === UserType.OWNER && {
+          ownerId: user?.id,
+        }),
+        ...(userType === UserType.RENTER && {
+          renterId: user?.id,
+        }),
+      },
+    });
     return user;
   } catch (e) {
     return prismaErrorHandler(e as Error);

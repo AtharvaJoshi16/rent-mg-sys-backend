@@ -3,8 +3,12 @@ import { prismaErrorCodes } from "../constants/errorCodes.js";
 import { errors } from "../constants/errors.js";
 
 export const prismaErrorHandler = (e: Error) => {
-  const { UNIQUE_CONSTRAINT, DB_REQUEST_TIMEOUT, DB_UNREACHABLE } =
-    prismaErrorCodes;
+  const {
+    UNIQUE_CONSTRAINT,
+    TRANSACTION_TIMEOUT,
+    DB_REQUEST_TIMEOUT,
+    DB_UNREACHABLE,
+  } = prismaErrorCodes;
 
   const {
     UNIQUE_CONTRAINT: UNIQUE_CONSTRAINT_MSG,
@@ -19,7 +23,7 @@ export const prismaErrorHandler = (e: Error) => {
       case UNIQUE_CONSTRAINT:
         return {
           status: 400,
-          error: UNIQUE_CONSTRAINT_MSG,
+          error: e.message,
           field: `${e.meta?.modelName}: ${e.meta?.target}`,
         };
       case DB_UNREACHABLE:
@@ -27,6 +31,11 @@ export const prismaErrorHandler = (e: Error) => {
           status: 503,
           error: SERVER_UNREACHABLE,
           field: `${e.meta?.modelName}: ${e.meta?.target}`,
+        };
+      case TRANSACTION_TIMEOUT:
+        return {
+          status: 408,
+          error: REQUEST_TIMEOUT,
         };
       case DB_REQUEST_TIMEOUT:
         return {

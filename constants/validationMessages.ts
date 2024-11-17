@@ -1,4 +1,6 @@
 export const messages = {
+  emptyCheck: (field: string) => `${field} cannot be empty.`,
+  noDataProvided: "No data provided for update",
   address: {
     id: "Invalid Address ID",
     ownerId: "Address: Invalid Owner ID",
