@@ -1,4 +1,4 @@
-export interface CustomCreateResponse {
+export interface CustomResponse {
   status: number;
   message?: string;
   error?: string;

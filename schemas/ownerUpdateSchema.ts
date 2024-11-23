@@ -1,19 +1,10 @@
 import z from "zod";
 import { messages } from "../constants/validationMessages.js";
 import { PreferredContactMethod } from "../interfaces/preferredContactMethod.enum.js";
+import { ownerId } from "./ownerBaseSchema.js";
 
 const emptyValues = [undefined, null, ""];
 const { emptyCheck } = messages;
-
-export const ownerId = z.number().refine(
-  (val) => {
-    const length = val.toString().length;
-    return length === 8;
-  },
-  {
-    message: messages.owner.id,
-  }
-);
 
 export const ownerUpdateSchema = z
   .object({

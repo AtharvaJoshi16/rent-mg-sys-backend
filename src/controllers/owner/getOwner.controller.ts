@@ -13,7 +13,10 @@ export const getOwnerController = async (c: Context) => {
       res.owner.address as Address,
       res.owner.emergencyDetails as EmergencyDetails
     );
-    return c.json(filteredOwnerData, res.status as StatusCode);
+    return c.json(
+      { ...res, owner: filteredOwnerData },
+      res.status as StatusCode
+    );
   }
   return c.json(res, res.status as StatusCode);
 };

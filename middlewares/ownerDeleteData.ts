@@ -1,24 +1,12 @@
 import { Context, Next } from "hono";
-import { StatusCode } from "hono/utils/http-status";
-import { ZodError } from "zod";
-import {
-  missingParamMessage,
-  responses,
-} from "../constants/responseMessages.js";
-import { formatZodError } from "../utils/formatZodError.js";
 import { ownerId } from "../schemas/ownerBaseSchema.js";
+import { ZodError } from "zod";
+import { formatZodError } from "../utils/formatZodError.js";
+import { responses } from "../constants/responseMessages.js";
+import { StatusCode } from "hono/utils/http-status";
 
-export const validateOwnerGetData = async (c: Context, next: Next) => {
+export const validateOwnerDeleteData = async (c: Context, next: Next) => {
   const id = parseInt(c.req.param("id"));
-
-  if (!id) {
-    return c.json(
-      {
-        error: missingParamMessage(["id"]),
-      },
-      400
-    );
-  }
 
   try {
     ownerId.parse(id);

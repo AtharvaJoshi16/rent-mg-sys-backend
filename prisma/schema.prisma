@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  relationMode = "prisma"
 }
 
 datasource db {
@@ -48,7 +49,7 @@ model Property {
   id Int @id
   ownerId Int
   renters Renter[]
-  owner Owner @relation(fields: [ownerId], references: [id])
+  owner Owner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   isVerified Boolean? @default(false)
   status PropertyStatus @default(pendingApproval)
   nextAvailableDate DateTime?
@@ -124,7 +125,7 @@ enum PropertyType {
 model Address {
   id String @id @default(cuid())
   ownerId Int? @unique
-  owner Owner? @relation(fields: [ownerId], references: [id])
+  owner Owner? @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   propertyId Int? @unique
   property Property? @relation(fields: [propertyId], references: [id])
   renterId Int? @unique
@@ -142,7 +143,7 @@ model Address {
 model EmergencyDetails {
   id String @id @default(cuid())
   ownerId Int? @unique
-  owner Owner? @relation(fields: [ownerId], references: [id])
+  owner Owner? @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   renterId Int? @unique
   renter Renter? @relation(fields: [renterId], references: [id])
   phone1 String @unique

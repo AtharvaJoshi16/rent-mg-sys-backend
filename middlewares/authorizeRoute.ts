@@ -20,6 +20,6 @@ export const authorizeRoute = async (c: Context, next: Next) => {
   if (!data.verified) {
     return c.json(data);
   }
-
+  c.set("user", data);
   await next();
 };

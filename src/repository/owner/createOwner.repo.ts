@@ -4,7 +4,7 @@ import { creationSuccessMessage } from "../../../constants/responseMessages.js";
 import { emailData } from "../../../constants/verificationEmail.js";
 import { prismaErrorHandler } from "../../../handlers/prismaErrorHandler.js";
 import { PrismaOwnerData } from "../../../interfaces/owner.js";
-import type { CustomCreateResponse } from "../../../interfaces/responses.js";
+import type { CustomResponse } from "../../../interfaces/responses.js";
 import { generateId } from "../../../utils/generateId.js";
 import { db } from "../../../utils/prismaClient.js";
 import { generateToken } from "../../../utils/tokenUtils.js";
@@ -13,7 +13,7 @@ import { transporter } from "../../../utils/transporter.js";
 export const createOwner = async (
   data: PrismaOwnerData,
   emailVerificationLink: string
-): Promise<CustomCreateResponse> => {
+): Promise<CustomResponse> => {
   const newId = generateId();
   const formattedData = { ...data };
   const { address, emergencyDetails } = formattedData;

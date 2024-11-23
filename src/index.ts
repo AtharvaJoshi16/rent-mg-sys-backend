@@ -15,7 +15,7 @@ app.get("/health-check", (c) => {
 
 app.use("/", cors() as MiddlewareHandler<BlankEnv, "/api/v1", {}>);
 
-app.route("/owner", ownerRouter);
+app.route("/owners", ownerRouter);
 app.route("/auth", authRouter);
 
 console.info(`Server is running on http://localhost:${process.env.PORT}`);

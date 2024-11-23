@@ -2,16 +2,6 @@ import z from "zod";
 import { messages } from "../constants/validationMessages.js";
 import { PreferredContactMethod } from "../interfaces/preferredContactMethod.enum.js";
 
-export const ownerId = z.number().refine(
-  (val) => {
-    const length = val.toString().length;
-    return length === 8;
-  },
-  {
-    message: messages.owner.id,
-  }
-);
-
 export const ownerCreateSchema = z.object({
   email: z.string().email({ message: messages.owner.email }),
   password: z

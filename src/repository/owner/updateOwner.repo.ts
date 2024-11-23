@@ -1,13 +1,14 @@
 import { Prisma } from "@prisma/client";
 import { prismaErrorCodes } from "../../../constants/errorCodes.js";
 import {
+  activeUserCannotActionMsg,
   alreadyInUse,
   responses,
   updateSuccessMessage,
 } from "../../../constants/responseMessages.js";
 import { emailData } from "../../../constants/verificationEmail.js";
 import { prismaErrorHandler } from "../../../handlers/prismaErrorHandler.js";
-import { CustomCreateResponse } from "../../../interfaces/responses.js";
+import { CustomResponse } from "../../../interfaces/responses.js";
 import { UserType } from "../../../interfaces/userType.enum.js";
 import { UpdateOwnerSchema } from "../../../schemas/ownerUpdateSchema.js";
 import { filterPayload } from "../../../utils/filterData.js";
@@ -22,14 +23,22 @@ import { transporter } from "../../../utils/transporter.js";
 
 export const updateOwner = async (
   data: UpdateOwnerSchema,
-  verificationLink: string
-): Promise<CustomCreateResponse> => {
+  verificationLink: string,
+  activeUserEmail: string
+): Promise<CustomResponse> => {
   const payload = { ...data };
   const filteredPayload = filterPayload(payload);
   const { address, emergencyDetails, phone1, phone2, email } = filteredPayload;
 
   const user: any = await findUser(email!, UserType.OWNER);
   const isEmailUpdated = !!email && user?.email !== email;
+
+  if (user?.email !== activeUserEmail) {
+    return {
+      status: 422,
+      message: activeUserCannotActionMsg(user?.id, "update"),
+    };
+  }
 
   try {
     await db.$transaction(

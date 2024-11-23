@@ -31,6 +31,20 @@ export const noUserFoundWithEmailAndTypeMessage = (
   return `No user with type ${userType} exists with email ${email}`;
 };
 
+export const noOwnerFoundWithId = (ownerId: number) =>
+  `Owner not found with ID: ${ownerId}`;
+
+export const ownerDeleteMessage = (ownerId: number) =>
+  `Owner deleted with ID: ${ownerId}`;
+
+export const hasActivePropertiesMessage = (ownerId: number) =>
+  `Active properties exist for ownerID: ${ownerId}`;
+
+export const activeUserCannotActionMsg = (
+  ownerId: number,
+  action: "delete" | "update"
+) => `Active user cannot ${action} owner ${ownerId}`;
+
 export const userAlreadyVerified = (email: string, userType: UserTypeEnum) => {
   return `User is already verified with type ${userType} and email ${email}`;
 };
