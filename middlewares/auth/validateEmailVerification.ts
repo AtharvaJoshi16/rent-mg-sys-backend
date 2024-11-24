@@ -1,13 +1,10 @@
 import { Context, Next } from "hono";
 import { StatusCode } from "hono/utils/http-status";
-import { z, ZodError } from "zod";
-import {
-  missingParamMessage,
-  responses,
-} from "../constants/responseMessages.js";
-import { messages } from "../constants/validationMessages.js";
-import { UserType } from "../interfaces/userType.enum.js";
-import { formatZodError } from "../utils/formatZodError.js";
+import { z } from "zod";
+import { missingParamMessage } from "../../constants/responseMessages.js";
+import { messages } from "../../constants/validationMessages.js";
+import { zodErrorHandler } from "../../handlers/zodErrorHandler.js";
+import { UserType } from "../../interfaces/userType.enum.js";
 
 export const validateEmailVerification = async (c: Context, next: Next) => {
   const token = c.req.query("token");
@@ -37,15 +34,7 @@ export const validateEmailVerification = async (c: Context, next: Next) => {
     userTypeSchema.parse(userType);
     await next();
   } catch (e) {
-    if (e instanceof ZodError) {
-      return c.json(
-        {
-          errors: formatZodError(e),
-        },
-        400
-      );
-    } else {
-      return c.json({ message: responses.UNKNOWN }, 520 as StatusCode);
-    }
+    const errorRes = zodErrorHandler(e as Error);
+    return c.json({ ...errorRes }, errorRes.status as StatusCode);
   }
 };

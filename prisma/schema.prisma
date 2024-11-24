@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   relationMode = "prisma"
@@ -14,7 +8,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Owner {
+model User {
   id Int @id
   email String @unique
   password String
@@ -22,19 +16,30 @@ model Owner {
   firstName String
   middleName String?
   lastName String
-  isVerified Boolean? @default(false)
   isEmailVerified Boolean? @default(false)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
   phone1 String @unique
   phone2 String? @unique
+  profileImage String?
+  owner Owner?
+  renter Renter?
+}
+
+model Owner {
+  id String @id @default(cuid())
+  ownerId Int @unique
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  isVerified Boolean? @default(false)
   address Address?
-  aadharId String
-  panId String
-  aadhar String
-  pan String
-  drivingLicenseId String?
-  drivingLicense String?
-  voterId String?
-  voter String?
+  aadharId String @unique
+  panId String @unique
+  aadhar String @unique
+  pan String @unique
+  drivingLicenseId String? @unique
+  drivingLicense String? @unique
+  voterId String? @unique
+  voter String? @unique
   profileImage String?
   description String?
   preferredContactMethod PreferredContactMethod?
@@ -46,10 +51,10 @@ model Owner {
 }
 
 model Property {
-  id Int @id
+  id String @id @default(cuid())
   ownerId Int
   renters Renter[]
-  owner Owner @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner Owner @relation(fields: [ownerId], references: [ownerId], onDelete: Cascade)
   isVerified Boolean? @default(false)
   status PropertyStatus @default(pendingApproval)
   nextAvailableDate DateTime?
@@ -61,13 +66,15 @@ model Property {
   description String
   preferred Preference
   photos String[]
+  electricityBillConsumerNo Int @unique
+  propertyId String @unique
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 }
 
 model RoomDetails {
   id String @id @default(cuid())
-  propertyId Int @unique
+  propertyId String @unique
   property Property @relation(fields: [propertyId], references: [id])
   quantity Int
   rentType RentType
@@ -76,30 +83,21 @@ model RoomDetails {
 }
 
 model Renter {
-  id Int @id
-  renterPropertyId Int?
-  renterProperty Property? @relation(fields: [renterPropertyId], references: [id])
-  password String
-  firstName String
-  middleName String?
-  lastName String
+  id String @id @default(cuid())
+  renterId Int @unique
+  renter User @relation(fields: [renterId], references: [id], onDelete: Cascade)
+  rentedPropertyId String?
+  rentedProperty Property? @relation(fields: [rentedPropertyId], references: [id])
   address Address?
-  email String @unique
-  isEmailVerified Boolean? @default(false)
-  phone1 String @unique
-  phone2 String? @unique
-  DOB DateTime
-  userType UserType
-  aadharId String
-  panId String
-  aadhar String
-  pan String
-  drivingLicenseId String?
-  drivingLicense String?
-  voterId String?
-  voter String?
-  profileImage String
-  desription String?
+  aadharId String @unique
+  panId String @unique
+  aadhar String @unique
+  pan String @unique
+  drivingLicenseId String? @unique
+  drivingLicense String? @unique
+  voterId String? @unique
+  voter String? @unique
+  description String?
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
   guardianDetails EmergencyDetails[]
@@ -125,11 +123,11 @@ enum PropertyType {
 model Address {
   id String @id @default(cuid())
   ownerId Int? @unique
-  owner Owner? @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  propertyId Int? @unique
+  owner Owner? @relation(fields: [ownerId], references: [ownerId], onDelete: Cascade)
+  propertyId String? @unique
   property Property? @relation(fields: [propertyId], references: [id])
   renterId Int? @unique
-  renter Renter? @relation(fields: [renterId], references: [id])
+  renter Renter? @relation(fields: [renterId], references: [renterId])
   addressLine String
   city String
   state String
@@ -143,9 +141,9 @@ model Address {
 model EmergencyDetails {
   id String @id @default(cuid())
   ownerId Int? @unique
-  owner Owner? @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner Owner? @relation(fields: [ownerId], references: [ownerId], onDelete: Cascade)
   renterId Int? @unique
-  renter Renter? @relation(fields: [renterId], references: [id])
+  renter Renter? @relation(fields: [renterId], references: [renterId])
   phone1 String @unique
   phone2 String?
   email String @unique

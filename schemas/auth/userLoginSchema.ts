@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { messages } from "../constants/validationMessages.js";
-import { UserType } from "../interfaces/userType.enum.js";
+import { messages } from "../../constants/validationMessages.js";
+import { UserType } from "../../interfaces/userType.enum.js";
 
 export const userLoginSchema = z.object({
   email: z.string().email(),

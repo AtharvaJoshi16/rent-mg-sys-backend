@@ -1,24 +1,15 @@
-import { Address, EmergencyDetails, Owner } from "@prisma/client";
-import { PrismaOwnerData } from "../interfaces/owner.js";
+import { IUser } from "../interfaces/owner.js";
 
-export const getOwnerFilteredData = (
-  owner: Partial<Owner>,
-  address: Partial<Address>,
-  emergencyDetails: Partial<EmergencyDetails>
-): PrismaOwnerData => {
-  const ownerCopy = { ...owner };
-  const addressCopy = { ...address };
-  const emergencyDetailsCopy = { ...emergencyDetails };
-  delete emergencyDetailsCopy?.id;
-  delete ownerCopy?.password;
-  delete addressCopy?.id;
-  delete addressCopy?.renterId;
-  delete addressCopy?.propertyId;
-  delete emergencyDetailsCopy?.renterId;
+export const getOwnerFilteredData = (user: Partial<IUser>) => {
+  const userCopy: Partial<IUser> = { ...user };
+  delete userCopy?.owner?.emergencyDetails?.id;
+  delete userCopy?.password;
+  delete userCopy?.owner?.address?.id;
+  delete userCopy?.owner?.address?.renterId;
+  delete userCopy?.owner?.address?.propertyId;
+  delete userCopy?.owner?.emergencyDetails?.renterId;
 
   return {
-    ...(ownerCopy as Owner),
-    address: addressCopy as Address,
-    emergencyDetails: emergencyDetailsCopy as EmergencyDetails,
+    ...(userCopy as IUser),
   };
 };

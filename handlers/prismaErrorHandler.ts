@@ -24,7 +24,7 @@ export const prismaErrorHandler = (e: Error): PrismaErrorHandler => {
       case UNIQUE_CONSTRAINT:
         return {
           status: 400,
-          error: e.message,
+          message: UNIQUE_CONSTRAINT_MSG,
           field: `${e.meta?.modelName}: ${e.meta?.target}`,
         };
       case DB_UNREACHABLE:

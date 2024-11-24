@@ -16,8 +16,11 @@ export const userLogin = async (
     firstName,
     lastName,
     isVerified,
+    isEmailVerified,
     userType: dbUserType,
     profileImage,
+    phone1,
+    phone2,
     password: dbPassword,
   } = user ?? {};
   if (!user) {
@@ -37,8 +40,11 @@ export const userLogin = async (
         firstName,
         lastName,
         isVerified,
+        isEmailVerified,
         userType: dbUserType,
         profileImage,
+        phone1,
+        phone2,
       },
     };
   } else {

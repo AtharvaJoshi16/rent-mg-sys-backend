@@ -4,6 +4,7 @@ import type { MiddlewareHandler } from "hono";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import type { BlankEnv } from "hono/types";
+import { apiDocsHandler } from "../constants/docs/apiDocsHandler.js";
 import { authRouter } from "./routes/auth.js";
 import { ownerRouter } from "./routes/owner.js";
 dotenv.config();
@@ -17,6 +18,8 @@ app.use("/", cors() as MiddlewareHandler<BlankEnv, "/api/v1", {}>);
 
 app.route("/owners", ownerRouter);
 app.route("/auth", authRouter);
+
+app.get("/docs", apiDocsHandler);
 
 console.info(`Server is running on http://localhost:${process.env.PORT}`);
 

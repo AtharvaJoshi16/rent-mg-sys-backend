@@ -1,9 +1,9 @@
 import { Prisma } from "@prisma/client";
-import { OwnersGetSchema } from "../schemas/ownersGetSchema.js";
+import { OwnersGetSchema } from "../schemas/owner/ownersGetSchema.js";
 
 export const getOwnersFilterConditions = (
   queries: OwnersGetSchema
-): Prisma.OwnerWhereInput => {
+): Prisma.UserWhereInput => {
   const {
     id,
     email,
@@ -38,30 +38,32 @@ export const getOwnersFilterConditions = (
     firstName: { contains: firstName },
     middleName: { contains: middleName },
     lastName: { contains: lastName },
-    isVerified,
+    owner: {
+      isVerified,
+      aadharId,
+      drivingLicenseId,
+      voterId,
+      panId,
+      preferredContactMethod,
+      preferredLanguage,
+      address: {
+        city: { contains: city },
+        pincode,
+        addressLine: { contains: addressLine },
+        state: { contains: state },
+      },
+      emergencyDetails: {
+        email: { contains: edEmail },
+        phone1: { contains: edPhone1 },
+        phone2: { contains: edPhone2 },
+        firstName: { contains: edFirstName },
+        middleName: { contains: edMiddleName },
+        lastName: { contains: edLastName },
+        relation: { contains: edRelation },
+      },
+    },
     isEmailVerified,
     phone1: { contains: phone1 },
     phone2: { contains: phone2 },
-    aadharId,
-    drivingLicenseId,
-    voterId,
-    panId,
-    preferredContactMethod,
-    preferredLanguage,
-    address: {
-      city: { contains: city },
-      pincode,
-      addressLine: { contains: addressLine },
-      state: { contains: state },
-    },
-    emergencyDetails: {
-      email: { contains: edEmail },
-      phone1: { contains: edPhone1 },
-      phone2: { contains: edPhone2 },
-      firstName: { contains: edFirstName },
-      middleName: { contains: edMiddleName },
-      lastName: { contains: edLastName },
-      relation: { contains: edRelation },
-    },
   };
 };

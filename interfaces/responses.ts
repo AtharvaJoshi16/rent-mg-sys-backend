@@ -7,5 +7,6 @@ export interface CustomResponse {
 
 export interface CustomGenericResponse {
   status: number;
-  error: string;
+  message?: string;
+  error?: string;
 }

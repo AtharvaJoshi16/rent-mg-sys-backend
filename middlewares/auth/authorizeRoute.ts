@@ -1,7 +1,7 @@
 import { Context, Next } from "hono";
-import { errors } from "../constants/errors.js";
-import { VerifyTokenResponse } from "../interfaces/verifyTokenResponse.js";
-import { verifyToken } from "../utils/tokenUtils.js";
+import { errors } from "../../constants/errors.js";
+import { VerifyTokenResponse } from "../../interfaces/verifyTokenResponse.js";
+import { verifyToken } from "../../utils/tokenUtils.js";
 
 export const authorizeRoute = async (c: Context, next: Next) => {
   const token = c.req.header("Authorization");

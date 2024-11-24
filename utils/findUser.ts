@@ -1,37 +1,20 @@
+import { UserType } from "@prisma/client";
 import { prismaErrorHandler } from "../handlers/prismaErrorHandler.js";
-import { PrismaOwnerData } from "../interfaces/owner.js";
-import { PrismaRenterData } from "../interfaces/renter.js";
-import { CustomCreateResponse } from "../interfaces/responses.js";
-import { UserType } from "../interfaces/userType.enum.js";
 import { db } from "./prismaClient.js";
 
 export const findUser = async (
   email: string,
   userType: UserType
-): Promise<
-  PrismaOwnerData | PrismaRenterData | CustomCreateResponse | null
-> => {
+): Promise<any> => {
   try {
-    const user =
-      userType === UserType.OWNER
-        ? await db.owner.findFirst({
-            where: {
-              email: email,
-            },
-          })
-        : await db.renter.findFirst({
-            where: {
-              email: email,
-            },
-          });
-    const address = await db.address.findFirst({
+    const user = await db.user.findFirst({
       where: {
-        ...(userType === UserType.OWNER && {
-          ownerId: user?.id,
-        }),
-        ...(userType === UserType.RENTER && {
-          renterId: user?.id,
-        }),
+        email,
+        userType,
+      },
+      include: {
+        owner: userType === UserType.owner,
+        renter: userType === UserType.renter,
       },
     });
     return user;

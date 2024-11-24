@@ -1,26 +1,24 @@
 import { prismaErrorHandler } from "../../../handlers/prismaErrorHandler.js";
 import {
   IOwnerGet,
+  IUser,
   OwnerGetResponse,
-  PrismaOwnerData,
 } from "../../../interfaces/owner.js";
 import { db } from "../../../utils/prismaClient.js";
 
 export const getOwner = async (ownerId: number): Promise<IOwnerGet> => {
   try {
-    const owner = await db.owner.findFirst({
+    const owner: IUser = (await db.user.findFirst({
       where: {
         id: ownerId,
       },
       include: {
-        address: true,
-        emergencyDetails: true,
-        properties: true,
+        owner: true,
       },
-    });
+    })) as IUser;
     return {
       status: 200,
-      owner: owner as PrismaOwnerData,
+      owner: owner,
     } as OwnerGetResponse;
   } catch (e) {
     console.info(e);

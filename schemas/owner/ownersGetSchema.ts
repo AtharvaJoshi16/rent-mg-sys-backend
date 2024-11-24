@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { PreferredContactMethod } from "../interfaces/preferredContactMethod.enum.js";
-import { messages } from "../constants/validationMessages.js";
+import { messages } from "../../constants/validationMessages.js";
+import { PreferredContactMethod } from "../../interfaces/preferredContactMethod.enum.js";
 
 const ownerId = z.string().refine(
   (val) => {

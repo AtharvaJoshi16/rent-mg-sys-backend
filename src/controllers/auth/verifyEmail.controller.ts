@@ -1,4 +1,5 @@
 import { Context } from "hono";
+import { StatusCode } from "hono/utils/http-status";
 import { params } from "../../../constants/queryParams/commonParams.js";
 import { userAlreadyVerified } from "../../../constants/responseMessages.js";
 import { UserType } from "../../../interfaces/userType.enum.js";
@@ -11,8 +12,8 @@ export const verifyEmailController = async (c: Context) => {
   const token = c.req.query(params.token);
   const userType = c.req.query(params.userType);
   const data = verifyToken(token!) as VerifyTokenResponse;
+  const user: any = await findUser(data.info?.email!, userType as UserType);
   if (data.verified) {
-    const user: any = await findUser(data.info?.email!, userType as UserType);
     if (user?.isEmailVerified) {
       return c.json({
         status: 200,
@@ -20,7 +21,7 @@ export const verifyEmailController = async (c: Context) => {
       });
     }
     const res = await verifyEmail(data.info?.email!, userType as UserType);
-    return c.json(res);
+    return c.json(res, res.status as StatusCode);
   } else {
     return c.json(data);
   }

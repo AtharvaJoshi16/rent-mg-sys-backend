@@ -1,14 +1,24 @@
-import { Address, EmergencyDetails, Owner } from "@prisma/client";
+import { Address, EmergencyDetails, Owner, Renter, User } from "@prisma/client";
 import { PrismaErrorHandler } from "./prismaErrorHandler.js";
 import { CustomGenericResponse, CustomResponse } from "./responses.js";
 
-export interface PrismaOwnerData extends Owner {
-  address?: Address;
-  emergencyDetails?: EmergencyDetails;
+export interface IOwner extends Owner {
+  address?: Partial<Address>;
+  emergencyDetails?: Partial<EmergencyDetails>;
+}
+
+export interface IUser extends User {
+  owner?: IOwner;
+  renter?: Renter;
 }
 
 export interface OwnerGetResponse extends CustomGenericResponse {
-  owner: PrismaOwnerData;
+  owner: IUser;
+}
+
+export interface OwnersGetResponse extends CustomGenericResponse {
+  ownersCount: number;
+  owners: IUser[];
 }
 
 export interface OwnerDeleteResponse extends CustomResponse {
@@ -20,4 +30,5 @@ export interface OwnerDeleteResponse extends CustomResponse {
 export type ApiResponse<T> = T | PrismaErrorHandler;
 
 export type IOwnerGet = ApiResponse<OwnerGetResponse>;
+export type IOwnersGet = ApiResponse<OwnersGetResponse>;
 export type IOwnerDelete = ApiResponse<OwnerDeleteResponse>;

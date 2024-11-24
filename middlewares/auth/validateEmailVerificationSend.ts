@@ -4,10 +4,10 @@ import { z, ZodError } from "zod";
 import {
   missingParamMessage,
   responses,
-} from "../constants/responseMessages.js";
-import { messages } from "../constants/validationMessages.js";
-import { UserType } from "../interfaces/userType.enum.js";
-import { formatZodError } from "../utils/formatZodError.js";
+} from "../../constants/responseMessages.js";
+import { messages } from "../../constants/validationMessages.js";
+import { UserType } from "../../interfaces/userType.enum.js";
+import { formatZodError } from "../../utils/formatZodError.js";
 
 export const validateEmailVerificationSend = async (c: Context, next: Next) => {
   const email = c.req.query("email");

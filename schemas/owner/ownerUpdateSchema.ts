@@ -1,6 +1,6 @@
 import z from "zod";
-import { messages } from "../constants/validationMessages.js";
-import { PreferredContactMethod } from "../interfaces/preferredContactMethod.enum.js";
+import { messages } from "../../constants/validationMessages.js";
+import { PreferredContactMethod } from "../../interfaces/preferredContactMethod.enum.js";
 import { ownerId } from "./ownerBaseSchema.js";
 
 const emptyValues = [undefined, null, ""];

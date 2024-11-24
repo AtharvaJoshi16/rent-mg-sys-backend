@@ -49,6 +49,10 @@ export const userAlreadyVerified = (email: string, userType: UserTypeEnum) => {
   return `User is already verified with type ${userType} and email ${email}`;
 };
 
+export const userAlreadyExists = (email: string, userType: UserTypeEnum) => {
+  return `User already exists with type ${userType} and email ${email}`;
+};
+
 export const emailConfirmation = (email: string) => {
   return `Verification email sent to ${email}`;
 };

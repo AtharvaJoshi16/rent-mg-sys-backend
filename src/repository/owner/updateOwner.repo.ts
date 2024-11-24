@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, UserType as PrismaUserType } from "@prisma/client";
 import { prismaErrorCodes } from "../../../constants/errorCodes.js";
 import {
   activeUserCannotActionMsg,
@@ -10,14 +10,11 @@ import { emailData } from "../../../constants/verificationEmail.js";
 import { prismaErrorHandler } from "../../../handlers/prismaErrorHandler.js";
 import { CustomResponse } from "../../../interfaces/responses.js";
 import { UserType } from "../../../interfaces/userType.enum.js";
-import { UpdateOwnerSchema } from "../../../schemas/ownerUpdateSchema.js";
+import { UpdateOwnerSchema } from "../../../schemas/owner/ownerUpdateSchema.js";
 import { filterPayload } from "../../../utils/filterData.js";
-import {
-  filterAddressPayload,
-  filterEmergencyDetailsPayload,
-} from "../../../utils/filterPayloads.js";
 import { findUser } from "../../../utils/findUser.js";
 import { db } from "../../../utils/prismaClient.js";
+import { serializeOwnerUpdateData } from "../../../utils/serializeOwnerUpdateData.js";
 import { generateToken } from "../../../utils/tokenUtils.js";
 import { transporter } from "../../../utils/transporter.js";
 
@@ -27,13 +24,19 @@ export const updateOwner = async (
   activeUserEmail: string
 ): Promise<CustomResponse> => {
   const payload = { ...data };
-  const filteredPayload = filterPayload(payload);
-  const { address, emergencyDetails, phone1, phone2, email } = filteredPayload;
+  const serializedOwnerUpdateData = serializeOwnerUpdateData(payload);
+  const filteredUserData = filterPayload(serializedOwnerUpdateData.user);
+  const filteredOwnerData = filterPayload(serializedOwnerUpdateData.owner);
+
+  const { phone1, phone2, email, id, firstName, lastName, middleName } =
+    filteredUserData ?? {};
+  const { address, emergencyDetails } = filteredOwnerData ?? {};
 
   const user: any = await findUser(email!, UserType.OWNER);
-  const isEmailUpdated = !!email && user?.email !== email;
+  const isEmailUpdated =
+    (!user?.email && !!email) || (!!user?.email && user?.email !== email);
 
-  if (user?.email !== activeUserEmail) {
+  if (!!user?.email && user?.email !== activeUserEmail) {
     return {
       status: 422,
       message: activeUserCannotActionMsg(user?.id, "update"),
@@ -43,10 +46,12 @@ export const updateOwner = async (
   try {
     await db.$transaction(
       async (tx) => {
+        console.log(id, isEmailUpdated);
         if (!!email) {
-          const existingOwnerWithEmail = await tx.owner.findUnique({
+          const existingOwnerWithEmail = await tx.user.findUnique({
             where: {
               email: email,
+              userType: PrismaUserType.owner,
             },
           });
 
@@ -65,9 +70,10 @@ export const updateOwner = async (
           }
         }
         if (!!phone1) {
-          const existingOwnerWithPhone1 = await tx.owner.findUnique({
+          const existingOwnerWithPhone1 = await tx.user.findUnique({
             where: {
-              phone1: phone1,
+              phone1,
+              userType: PrismaUserType.owner,
             },
           });
 
@@ -86,9 +92,10 @@ export const updateOwner = async (
           }
         }
         if (!!phone2) {
-          const existingOwnerWithPhone2 = await tx.owner.findUnique({
+          const existingOwnerWithPhone2 = await tx.user.findUnique({
             where: {
-              phone2: phone2,
+              phone2,
+              userType: PrismaUserType.owner,
             },
           });
 
@@ -106,30 +113,34 @@ export const updateOwner = async (
             );
           }
         }
-
-        await db.owner.update({
+        await tx.user.update({
           where: {
-            id: data.id,
+            id,
           },
           data: {
-            ...filteredPayload,
             ...(isEmailUpdated && {
               isEmailVerified: false,
             }),
-            address: {
+            ...filteredUserData,
+            owner: {
               update: {
-                ...filterAddressPayload(address),
-              },
-            },
-            emergencyDetails: {
-              update: {
-                ...filterEmergencyDetailsPayload(emergencyDetails),
+                ...filteredOwnerData,
+                address: {
+                  update: {
+                    ...address,
+                  },
+                },
+                emergencyDetails: {
+                  update: {
+                    ...emergencyDetails,
+                  },
+                },
               },
             },
           },
         });
       },
-      { timeout: 20000 }
+      { timeout: 600000 }
     );
 
     if (isEmailUpdated) {
@@ -140,7 +151,7 @@ export const updateOwner = async (
         to: email,
         subject: emailData.subject,
         html: emailData.html(
-          `${payload.firstName} ${payload.lastName}`,
+          `${firstName} ${lastName}`,
           `${verificationLink}?token=${token}`
         ),
       });
@@ -151,7 +162,7 @@ export const updateOwner = async (
       status: 201,
       message: isEmailUpdated
         ? updateSuccessMessage({
-            email: payload.email!,
+            email: email!,
             userType: UserType.OWNER,
           })
         : responses.USER_UPDATED,

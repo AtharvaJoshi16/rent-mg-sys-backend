@@ -6,8 +6,8 @@ import {
   ownerDeleteMessage,
 } from "../../../constants/responseMessages.js";
 import { prismaErrorHandler } from "../../../handlers/prismaErrorHandler.js";
-import { db } from "../../../utils/prismaClient.js";
 import { IOwnerDelete } from "../../../interfaces/owner.js";
+import { db } from "../../../utils/prismaClient.js";
 
 export const deleteOwner = async (
   ownerId: number,
@@ -15,29 +15,32 @@ export const deleteOwner = async (
 ): Promise<IOwnerDelete> => {
   try {
     return await db.$transaction(async (tx) => {
-      const owner = await tx.owner.findFirst({
+      const ownerData = await tx.user.findFirst({
         where: { id: ownerId },
         include: {
-          properties: true,
+          owner: {
+            include: {
+              properties: true,
+            },
+          },
         },
       });
-
-      if (!owner) {
+      if (!ownerData) {
         return {
           status: 404,
           message: noOwnerFoundWithId(ownerId),
         };
       }
 
-      if (owner?.email !== activeUserEmail) {
+      if (ownerData?.email !== activeUserEmail) {
         return {
           status: 422,
           message: activeUserCannotActionMsg(ownerId, "delete"),
         };
       }
 
-      if (!!owner.properties.length) {
-        const hasActiveProperties = owner.properties.some(
+      if (!!ownerData.owner?.properties.length) {
+        const hasActiveProperties = ownerData.owner.properties.some(
           (prop) => prop.status !== PropertyStatus.notRentingAnymore
         );
         if (hasActiveProperties) {
@@ -48,14 +51,14 @@ export const deleteOwner = async (
         }
       }
 
-      await tx.owner.delete({
+      await tx.user.delete({
         where: { id: ownerId },
       });
       return {
         status: 201,
         message: ownerDeleteMessage(ownerId),
         affected: {
-          properties: owner.properties
+          properties: ownerData.owner?.properties
             .filter((prop) => prop.status !== PropertyStatus.notRentingAnymore)
             .map((prop) => prop.id),
         },
