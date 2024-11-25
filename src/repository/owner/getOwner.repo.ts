@@ -13,7 +13,11 @@ export const getOwner = async (ownerId: number): Promise<IOwnerGet> => {
         id: ownerId,
       },
       include: {
-        owner: true,
+        owner: {
+          include: {
+            properties: true,
+          },
+        },
       },
     })) as IUser;
     return {

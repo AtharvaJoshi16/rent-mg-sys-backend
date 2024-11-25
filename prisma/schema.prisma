@@ -66,8 +66,8 @@ model Property {
   description String
   preferred Preference
   photos String[]
-  electricityBillConsumerNo Int @unique
-  propertyId String @unique
+  electricityBillConsumerNo String @unique
+  propertyTaxId String @unique
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 }

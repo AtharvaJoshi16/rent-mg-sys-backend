@@ -4,6 +4,14 @@ export const responses = {
   UNKNOWN: "Encountered Unknown error",
   EMAIL_VERIFICATION_SUCCESS: "Email verified successfully",
   USER_UPDATED: "User data updated",
+  property: {
+    alreadyExistsMessage: (consumerNo: number, taxId: string) =>
+      `Property already exists with consumer No: ${consumerNo}, propertyTaxId: ${taxId}`,
+    activeUserCannotActionMsg: (active: number, ownerId: number) =>
+      `Active owner ${active} cannot action ownerID: ${ownerId}`,
+    propertyCreated: (ownerId: number) =>
+      `Property created for ownerID: ${ownerId}`,
+  },
 };
 
 export const creationSuccessMessage = (data: {

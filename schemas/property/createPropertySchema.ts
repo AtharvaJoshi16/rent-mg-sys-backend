@@ -16,8 +16,8 @@ export const createPropertySchema = z.object({
     electricityBill: z.string(),
     propertyTaxBill: z.string(),
   }),
-  electricityBillConsumerNo: z.number(),
-  propertyId: z.string(),
+  electricityBillConsumerNo: z.string(),
+  propertyTaxId: z.string(),
   type: z.enum(
     [PropertyType.APARTMENT, PropertyType.HOUSE, PropertyType.ROOMS],
     {
@@ -35,5 +35,8 @@ export const createPropertySchema = z.object({
     rentType: z.enum([RentType.TOTAL, RentType.PER_PERSON], {
       message: messages.property.roomDetails.rentType,
     }),
+    perPersonRent: z.number().optional(),
   }),
 });
+
+export type CreatePropertySchema = z.infer<typeof createPropertySchema>;

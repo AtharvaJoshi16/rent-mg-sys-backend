@@ -5,7 +5,6 @@ import { ownerId } from "../../schemas/owner/ownerBaseSchema.js";
 
 export const validateOwnerDeleteData = async (c: Context, next: Next) => {
   const id = parseInt(c.req.param("id"));
-
   try {
     ownerId.parse(id);
     await next();

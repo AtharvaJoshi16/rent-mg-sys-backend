@@ -12,7 +12,11 @@ export const getOwners = async (
     const owners = await db.user.findMany({
       where: whereConditions,
       include: {
-        owner: true,
+        owner: {
+          include: {
+            properties: true,
+          },
+        },
       },
     });
     return {
