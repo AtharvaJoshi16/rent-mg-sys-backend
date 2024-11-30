@@ -5,8 +5,10 @@ import { validatePropertyCreateData } from "../../middlewares/property/propertyC
 import { validatePropertyGetData } from "../../middlewares/property/propertyGetData.js";
 import { rateLimiterMiddleware } from "../../middlewares/rateLimiter.middleware.js";
 import { createPropertyController } from "../controllers/property/createProperty.controller.js";
+import { getPreferencesController } from "../controllers/property/getPreferences.controller.js";
 import { getPropertiesController } from "../controllers/property/getProperties.controller.js";
 import { getPropertyController } from "../controllers/property/getProperty.controller.js";
+import { getPropertyTypesController } from "../controllers/property/getPropertyTypes.controller.js";
 import { getStatusesController } from "../controllers/property/getStatuses.controller.js";
 
 const propertyRouter = new Hono();
@@ -26,6 +28,20 @@ propertyRouter.get(
   rateLimiterMiddleware(10, 60000, rateLimitStore),
   authorizeRoute,
   getStatusesController
+);
+
+propertyRouter.get(
+  "/propertyTypes",
+  rateLimiterMiddleware(10, 60000, rateLimitStore),
+  authorizeRoute,
+  getPropertyTypesController
+);
+
+propertyRouter.get(
+  "/preferences",
+  rateLimiterMiddleware(10, 60000, rateLimitStore),
+  authorizeRoute,
+  getPreferencesController
 );
 
 propertyRouter.get(

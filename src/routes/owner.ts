@@ -10,6 +10,7 @@ import { createOwnerController } from "../controllers/owner/createOwner.controll
 import { deleteOwnerController } from "../controllers/owner/deleteOwner.controller.js";
 import { getOwnerController } from "../controllers/owner/getOwner.controller.js";
 import { getOwnersController } from "../controllers/owner/getOwners.controller.js";
+import { getPreferredContactMethodsController } from "../controllers/owner/getPreferredContactMethods.controller.js";
 import { updateOwnerController } from "../controllers/owner/updateOwner.controller.js";
 
 const ownerRouter = new Hono();
@@ -17,19 +18,20 @@ const ownerRouter = new Hono();
 const rateLimitStore: Record<string, { count: number; expires: number }> = {};
 
 ownerRouter.get(
-  "/:id",
-  rateLimiterMiddleware(10, 60000, rateLimitStore),
-  authorizeRoute,
-  validateOwnerGetData,
-  getOwnerController
-);
-ownerRouter.get(
   "/",
   rateLimiterMiddleware(10, 60000, rateLimitStore),
   authorizeRoute,
   validateGetOwnersData,
   getOwnersController
 );
+
+ownerRouter.get(
+  "/contactMethods",
+  rateLimiterMiddleware(10, 60000, rateLimitStore),
+  authorizeRoute,
+  getPreferredContactMethodsController
+);
+
 ownerRouter.post(
   "/",
   rateLimiterMiddleware(10, 60000, rateLimitStore),
@@ -50,6 +52,13 @@ ownerRouter.delete(
   authorizeRoute,
   validateOwnerDeleteData,
   deleteOwnerController
+);
+ownerRouter.get(
+  "/:id",
+  rateLimiterMiddleware(10, 60000, rateLimitStore),
+  authorizeRoute,
+  validateOwnerGetData,
+  getOwnerController
 );
 
 export { ownerRouter };
