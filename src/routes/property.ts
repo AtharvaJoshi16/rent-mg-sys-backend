@@ -7,6 +7,7 @@ import { rateLimiterMiddleware } from "../../middlewares/rateLimiter.middleware.
 import { createPropertyController } from "../controllers/property/createProperty.controller.js";
 import { getPropertiesController } from "../controllers/property/getProperties.controller.js";
 import { getPropertyController } from "../controllers/property/getProperty.controller.js";
+import { getStatusesController } from "../controllers/property/getStatuses.controller.js";
 
 const propertyRouter = new Hono();
 
@@ -18,6 +19,13 @@ propertyRouter.post(
   authorizeRoute,
   validatePropertyCreateData,
   createPropertyController
+);
+
+propertyRouter.get(
+  "/statuses",
+  rateLimiterMiddleware(10, 60000, rateLimitStore),
+  authorizeRoute,
+  getStatusesController
 );
 
 propertyRouter.get(
