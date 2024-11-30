@@ -2,7 +2,7 @@ import { z } from "zod";
 import { messages } from "../../constants/validationMessages.js";
 import { PreferredContactMethod } from "../../interfaces/preferredContactMethod.enum.js";
 
-const ownerId = z.string().refine(
+export const ownerId = z.string().refine(
   (val) => {
     const length = val.toString().length;
     return length === 8;

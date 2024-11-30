@@ -1,7 +1,7 @@
 import { Context } from "hono";
 import { StatusCode } from "hono/utils/http-status";
 import { CreatePropertySchema } from "../../../schemas/property/createPropertySchema.js";
-import { createProperty } from "../../repository/property/createProperty.js";
+import { createProperty } from "../../repository/property/createProperty.repo.js";
 
 export const createPropertyController = async (c: Context) => {
   const payload: CreatePropertySchema = await c.req.json();

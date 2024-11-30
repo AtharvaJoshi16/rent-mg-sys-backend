@@ -15,7 +15,13 @@ export const getOwner = async (ownerId: number): Promise<IOwnerGet> => {
       include: {
         owner: {
           include: {
-            properties: true,
+            properties: {
+              include: {
+                roomDetails: true,
+                renters: true,
+                address: true,
+              },
+            },
           },
         },
       },

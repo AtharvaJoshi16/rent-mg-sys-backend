@@ -5,6 +5,8 @@ import { PropertyType } from "../../interfaces/propertyType.enum.js";
 import { RentType } from "../../interfaces/rentType.enum.js";
 import { ownerId } from "../owner/ownerBaseSchema.js";
 
+export const propertyId = z.string().cuid();
+
 export const createPropertySchema = z.object({
   ownerId,
   name: z.string(),

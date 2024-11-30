@@ -9,4 +9,5 @@ export const errors = {
   INVALID_TOKEN_ERROR: "Invalid or expired token",
   INVALID_PASSWORD: "Invalid password",
   UNAUTHORIZED: "Unauthorized",
+  TOO_MANY_REQUESTS: "Too many requests",
 };
