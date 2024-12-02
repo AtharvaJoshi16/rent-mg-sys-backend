@@ -9,7 +9,7 @@ import { authRouter } from "./routes/auth.js";
 import { ownerRouter } from "./routes/owner.js";
 import { propertyRouter } from "./routes/property.js";
 dotenv.config();
-const app = new Hono().basePath("/api/v1");
+const app = new Hono().basePath("/rms/api/v1");
 
 app.get("/health-check", (c) => {
   return c.json({ message: "Health check" });
