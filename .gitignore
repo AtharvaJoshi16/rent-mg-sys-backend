@@ -11,6 +11,12 @@
 # deps
 node_modules/
 
+# env
+.env
+.env.production
+
+Dockerfile
+
 # logs
 logs/
 *.log
