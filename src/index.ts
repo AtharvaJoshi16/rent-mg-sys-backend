@@ -5,25 +5,39 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import type { BlankEnv } from "hono/types";
 import { apiDocsHandler } from "../constants/docs/apiDocsHandler.js";
+import { rateLimiterMiddleware } from "../middlewares/rateLimiter.middleware.js";
 import { authRouter } from "./routes/auth.js";
 import { ownerRouter } from "./routes/owner.js";
 import { propertyRouter } from "./routes/property.js";
 dotenv.config();
-const app = new Hono().basePath("/rms/api/v1");
+const BASE_PATH = "/rms/api/v1";
+const app = new Hono().basePath(BASE_PATH);
 
-app.get("/health-check", (c) => {
-  return c.json({ message: "Health check" });
-});
+const rateLimitStore: Record<string, { count: number; expires: number }> = {};
 
-app.use("/", cors() as MiddlewareHandler<BlankEnv, "/api/v1", {}>);
+app.get(
+  "/health-check",
+  rateLimiterMiddleware(10, 60000, rateLimitStore),
+  (c) => {
+    return c.json({ message: "Health check" });
+  }
+);
+
+app.use("/", cors() as MiddlewareHandler<BlankEnv, "/rms/api/v1", {}>);
 
 app.route("/owners", ownerRouter);
 app.route("/auth", authRouter);
 app.route("/properties", propertyRouter);
 
-app.get("/docs", apiDocsHandler);
+app.get(
+  "/docs",
+  rateLimiterMiddleware(10, 60000, rateLimitStore),
+  apiDocsHandler
+);
 
-console.info(`Server is running on http://localhost:${process.env.PORT}`);
+console.info(
+  `Server is running on http://${process.env.HOST_NAME}:${process.env.PORT}`
+);
 
 serve({
   fetch: app.fetch,
